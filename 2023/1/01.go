@@ -19,7 +19,8 @@ func process() int {
 	*/
 
 	// Use os.open() function to open the file.
-	filePtr, err := os.Open("./test.txt")
+	// filePtr, err := os.Open("./test.txt")
+	filePtr, err := os.Open("./input.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
