@@ -1,4 +1,3 @@
-# Advent of Code solution repo
+# Advent of Code solution repo (Golang)
 
 ## 2023
-- Go
