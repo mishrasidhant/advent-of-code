@@ -36,12 +36,16 @@ func process() int {
 
 	// Process each line
 	sum := 0
-	numStr := []string{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
+	numStr := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
 	for scanner.Scan() {
 		var digit int
 		digits := []int{}
 		subStr := []rune{}
 		line := scanner.Text()
+		// Guard for empty lines
+		if len(line) == 0 {
+			continue
+		}
 		// fmt.Printf("%s", "---------------------")
 		// fmt.Printf("%v", reflect.TypeOf(line))
 		// fmt.Printf("%s", "---------------------")
@@ -57,12 +61,12 @@ func process() int {
 					// Trigger a comparison and store any digits you find here
 					for i := 0; i < len(numStr); i++ {
 						if strings.Contains(string(subStr), numStr[i]) {
-							digits = append(digits, i)
+							digits = append(digits, i+1)
 							break
 						}
 					}
 					// Clear subStr
-					fmt.Println(string(subStr))
+					// fmt.Println(string(subStr))
 					subStr = nil
 				}
 				digit, err = strconv.Atoi(string(char))
@@ -74,12 +78,25 @@ func process() int {
 			// Not a digit, begin to store substring
 			subStr = append(subStr, char)
 		}
+		// Account for remaining substring if line doesn't end in digit
+		if len(subStr) != 0 {
+			for i := 0; i < len(numStr); i++ {
+				if strings.Contains(string(subStr), numStr[i]) {
+					digits = append(digits, i+1)
+				}
+			}
+			// fmt.Println(string(subStr))
+			subStr = nil
+		}
 		// sum += firstDigit*10 + lastDigit
-		fmt.Println(string(subStr))
 		// firstDigit, lastDigit = 0, 0
 		// isFirst = true
-		sum = sum + (digits[0]*10 + digits[len(digits)-1])
-
+		fmt.Println(digits)
+		if len(digits) != 0 {
+			sum = sum + (digits[0]*10 + digits[len(digits)-1])
+			continue
+		}
+		sum = sum + (digits[0]*10 + digits[0])
 	}
 	// fmt.Printf("digits: %v", digits)
 	return sum
