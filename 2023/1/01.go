@@ -11,7 +11,7 @@ import (
 
 func process() int {
 	// Open file -> returns a file pointer with R access
-	filePtr, err := os.Open("./test.txt")
+	filePtr, err := os.Open("./partialinput.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -42,6 +42,7 @@ func process() int {
 				digit, err = strconv.Atoi(string(char))
 				if err == nil {
 					digits = append(digits, digit)
+					fmt.Println("Found: ", digit)
 				}
 				continue
 			}
@@ -57,11 +58,13 @@ func process() int {
 			}
 		}
 		fmt.Println(digits)
-		if len(digits) != 0 {
-			sum = sum + (digits[0]*10 + digits[len(digits)-1])
+		if len(digits) == 0 {
+			fmt.Println("NO DIGITS FOUND!!")
 			continue
 		}
-		sum = sum + (digits[0]*10 + digits[0])
+		fmt.Println("Digits: ", digits[0]*10, digits[len(digits)-1])
+		sum = sum + (digits[0]*10 + digits[len(digits)-1])
+		fmt.Println("Sum: ", sum)
 	}
 	return sum
 }
@@ -69,3 +72,15 @@ func process() int {
 func main() {
 	fmt.Printf("Result: %v\n", process())
 }
+
+/* BUG : Should be 62, need the char buffer to slide back
+---------------------
+fzrpfhbfvj6dbxbtfs7twofksfbshrzkdeightwoqg
+Found:  6
+Found:  7
+Found:  two
+Found:  eight
+[6 7 2 8]
+Digits:  60 8
+Sum:  866
+*/
