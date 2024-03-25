@@ -56,19 +56,21 @@ func process() int {
 			// fmt.Printf("%v", reflect.TypeOf(line[i]))
 			// fmt.Println(string(line[i]))
 			// Check for digit!
+			// TODO: Flow of logic needs changing
+			/*
+				if you encounter digit check substring (add if found) and clear it then append the digit
+				else add char to substring and check if substring length > 3 trigger a comparison
+				comparison needs to be a function
+					loop through the substring and find all matches
+					store the first and last index of matches
+					append the digit that has the smallest first index
+					resize the substring to start from last index of first match
+						repeat comparison
+			*/
 			if unicode.IsDigit(char) {
-				if len(subStr) != 0 {
-					// Trigger a comparison and store any digits you find here
-					for i := 0; i < len(numStr); i++ {
-						if strings.Contains(string(subStr), numStr[i]) {
-							digits = append(digits, i+1)
-							break
-						}
-					}
-					// Clear subStr
-					// fmt.Println(string(subStr))
-					subStr = nil
-				}
+				// if len(subStr) != 0 {
+				// 	// Trigger a comparison and store any digits you find here
+				// }
 				digit, err = strconv.Atoi(string(char))
 				if err == nil {
 					digits = append(digits, digit)
@@ -77,17 +79,25 @@ func process() int {
 			}
 			// Not a digit, begin to store substring
 			subStr = append(subStr, char)
-		}
-		// Account for remaining substring if line doesn't end in digit
-		if len(subStr) != 0 {
 			for i := 0; i < len(numStr); i++ {
 				if strings.Contains(string(subStr), numStr[i]) {
 					digits = append(digits, i+1)
+					fmt.Println("Found: ", numStr[i])
+					subStr = nil
+					break
 				}
 			}
-			// fmt.Println(string(subStr))
-			subStr = nil
 		}
+		// Account for remaining substring if line doesn't end in digit
+		// if len(subStr) != 0 {
+		// 	for i := 0; i < len(numStr); i++ {
+		// 		if strings.Contains(string(subStr), numStr[i]) {
+		// 			digits = append(digits, i+1)
+		// 		}
+		// 	}
+		// 	// fmt.Println(string(subStr))
+		// 	subStr = nil
+		// }
 		// sum += firstDigit*10 + lastDigit
 		// firstDigit, lastDigit = 0, 0
 		// isFirst = true
