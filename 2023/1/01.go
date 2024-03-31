@@ -19,33 +19,45 @@ type Comparator struct {
 	digit, index, length int
 }
 
-func RemoveIndex(c []Comparator, index int) []Comparator {
-	ret := []Comparator{}
-	ret = append(ret, c[:index]...)
-	return append(ret, c[index+1:]...)
-}
+// func RemoveIndex(c []Comparator, index int) []Comparator {
+// 	ret := []Comparator{}
+// 	ret = append(ret, c[:index]...)
+// 	return append(ret, c[index+1:]...)
+// }
 
 func findMatch(subString string) []int {
-	currentString := subString
 	rawMatches := []Comparator{}
 	matches := []int{}
 	numStr := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
 	// Comparison Logic => Move to function and impliment multiple sorted comparisons
 	// Find each match => NEED TO ENSURE YOU FIND EACH MATCH!!
 	for i := 0; i < len(numStr); i++ {
-		found := strings.Index(string(currentString), numStr[i])
+		found := strings.Index(string(subString), numStr[i])
 		// Keep slicing and finding till you have all matches
 		if found != -1 {
-			fmt.Println("FOUND initial string match : ", i+1)
+			// fmt.Println("Initial String: ", subString)
+			// fmt.Println("FOUND initial string match : ", numStr[i])
 			rawMatches = append(rawMatches, Comparator{digit: i + 1, index: found, length: len(numStr[i])})
-			// found =
-			for newFound := strings.Index(string(currentString[found+1:]), numStr[i]); found != -1; {
-				fmt.Println("FOUND A STRING MATCH: ", i+1)
-				fmt.Println("Substring: ", currentString)
-				rawMatches = append(rawMatches, Comparator{digit: i + 1, index: found, length: len(numStr[i])})
-				fmt.Println("Abount to compare substring:", currentString[found+1:])
-				found = strings.Index(string(currentString[found+1:]), numStr[i])
-				fmt.Println("Found:", found)
+			if (found + len(numStr[i])) >= len(subString) {
+				continue
+			}
+			currentString := subString[found+1:]
+			increment := found
+			for nestedFound := strings.Index(string(currentString), numStr[i]); nestedFound != -1; {
+				// fmt.Println("FOUND repeated STRING MATCH: ", i+1)
+				// fmt.Println("Substring: ", currentString)
+				// fmt.Printf("Found: %v, Increment: %v, NestedFound: %v\n", found, increment, nestedFound)
+				// rawMatches = append(rawMatches, Comparator{digit: i + 1, index: (increment + nestedFound), length: len(numStr[i])})
+				rawMatches = append(rawMatches, Comparator{digit: i + 1, index: nestedFound + increment + 1, length: len(numStr[i])})
+				if (nestedFound + len(numStr[i])) >= len(currentString) {
+					break
+				}
+				currentString = currentString[nestedFound+1:]
+				increment += nestedFound
+				nestedFound = strings.Index(string(currentString), numStr[i])
+				// fmt.Println("Abount to compare substring:", currentString[found+1:])
+				// found = strings.Index(string(currentString[found+1:]), numStr[i])
+				// fmt.Println("Found:", found)
 			}
 		}
 	}
@@ -56,15 +68,15 @@ func findMatch(subString string) []int {
 	})
 	// Remove overlapping matches
 	for i := 0; i < len(rawMatches)-1; i++ {
-		fmt.Println(rawMatches)
-		m1 := rawMatches[i].index + rawMatches[i].length
-		fmt.Println("m1: ", m1)
-		fmt.Println("m2: ", rawMatches[i+1].index)
-		if m1 > rawMatches[i+1].index {
+		// fmt.Printf("Raw matches: %#v", rawMatches)
+		m1 := rawMatches[i].index + rawMatches[i].length - 1
+		// fmt.Println("m1: ", m1)
+		// fmt.Println("m2: ", rawMatches[i+1].index)
+		if m1 >= rawMatches[i+1].index {
 			// Delete i+1
-			fmt.Println("Raw Matches PRE : ", rawMatches)
+			// fmt.Printf("Raw Matches PRE %+v: ", rawMatches)
 			rawMatches = append(rawMatches[:i], rawMatches[i+1:]...)
-			fmt.Println("Raw Matches POST DELETE: ", rawMatches)
+			// fmt.Printf("Raw Matches POST DELETE: %+v", rawMatches)
 		}
 	}
 	for _, match := range rawMatches {
@@ -76,7 +88,7 @@ func findMatch(subString string) []int {
 
 func process() int {
 	// Open file -> returns a file pointer with R access
-	filePtr, err := os.Open("./partialinput.txt")
+	filePtr, err := os.Open("./input.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -107,7 +119,7 @@ func process() int {
 				// fmt.Println("About to compare NUMERIC DIGIT : ", string(subStr))
 				match := findMatch(string(subStr))
 				if len(match) > 0 {
-					// fmt.Println(match)
+					fmt.Println("STRING: ", match)
 					digits = append(digits, match...)
 				}
 				// fmt.Println("NO MATCH FOUND")
@@ -115,6 +127,7 @@ func process() int {
 				// Store the number
 				digit, err = strconv.Atoi(string(char))
 				if err == nil {
+					fmt.Println("DIGIT: ", digit)
 					digits = append(digits, digit)
 					// fmt.Println("Found: ", digit)
 				}
@@ -126,10 +139,10 @@ func process() int {
 		// Account for leftover substring
 		if len(subStr) > 0 {
 			// Trigger a comparison here
-			fmt.Println("About to compare END OF LINE: ", string(subStr))
+			// fmt.Println("About to compare END OF LINE: ", string(subStr))
 			match := findMatch(string(subStr))
 			if len(match) > 0 {
-				fmt.Println("Match: ", match)
+				fmt.Println("String: ", match)
 				digits = append(digits, match...)
 			}
 			// fmt.Println("NO MATCH FOUND")
