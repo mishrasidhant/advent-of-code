@@ -10,10 +10,10 @@ import (
 	"unicode"
 )
 
-type Match struct {
-	index, number int
-	parentString  string
-}
+// type Match struct {
+// 	index, number int
+// 	parentString  string
+// }
 
 type Comparator struct {
 	digit, index, length int
