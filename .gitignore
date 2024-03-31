@@ -1,1 +1,4 @@
 .vscode
+*input.txt
+*test.txt
+*.log
