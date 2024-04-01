@@ -14,13 +14,14 @@ type Comparator struct {
 	digit, index, length int
 }
 
-// func RemoveIndex(c []Comparator, index int) []Comparator {
-// 	ret := []Comparator{}
-// 	ret = append(ret, c[:index]...)
-// 	return append(ret, c[index+1:]...)
-// }
+func RemoveIndex(c []Comparator, index int) []Comparator {
+	ret := []Comparator{}
+	ret = append(ret, c[:index]...)
+	return append(ret, c[index+1:]...)
+}
 
-func findMatch(subString string) []int {
+func findMatch(subString string, isFirst bool) []int {
+	var localBool = isFirst
 	rawMatches := []Comparator{}
 	matches := []int{}
 	numStr := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
@@ -54,7 +55,12 @@ func findMatch(subString string) []int {
 	for i := 0; i < len(rawMatches)-1; i++ {
 		m1 := rawMatches[i].index + rawMatches[i].length - 1
 		if m1 >= rawMatches[i+1].index {
-			rawMatches = append(rawMatches[:i], rawMatches[i+1:]...)
+			if localBool {
+				localBool = false
+				rawMatches = append(rawMatches[:i+1], rawMatches[i+2:]...)
+			} else {
+				rawMatches = append(rawMatches[:i], rawMatches[i+1:]...)
+			}
 		}
 	}
 	for _, match := range rawMatches {
@@ -89,14 +95,18 @@ func process() int {
 		}
 		fmt.Println("---------------------")
 		fmt.Println(line)
+		isFirst := true
 		for _, char := range line {
 			// Check for digit!
 			if unicode.IsDigit(char) {
 				// Trigger a comparison and reset substring, you've found a number
-				match := findMatch(string(subStr))
+				match := findMatch(string(subStr), isFirst)
 				if len(match) > 0 {
 					fmt.Println("STRING: ", match)
 					digits = append(digits, match...)
+					if len(digits) > 0 {
+						isFirst = false
+					}
 				}
 				subStr = nil
 				// Store the number
@@ -104,6 +114,9 @@ func process() int {
 				if err == nil {
 					fmt.Println("DIGIT: ", digit)
 					digits = append(digits, digit)
+					if len(digits) > 0 {
+						isFirst = false
+					}
 				}
 				continue
 			}
@@ -113,10 +126,13 @@ func process() int {
 		// Account for leftover substring
 		if len(subStr) > 0 {
 			// Trigger a comparison here
-			match := findMatch(string(subStr))
+			match := findMatch(string(subStr), isFirst)
 			if len(match) > 0 {
 				fmt.Println("String: ", match)
 				digits = append(digits, match...)
+				if len(digits) > 0 {
+					isFirst = false
+				}
 			}
 			subStr = nil
 		}
